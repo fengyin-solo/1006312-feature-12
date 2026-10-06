@@ -35,3 +35,70 @@ body { margin: 0; background: #f6f8fb; color: #1f2937; }
 .error-text { color: #b42318; }
 .status-legend { display: flex; flex-wrap: wrap; gap: 12px; margin: 0 0 10px; font-size: 12px; color: var(--muted); }
 .legend-item { background: #eef2f7; border-radius: 999px; padding: 2px 10px; }
+
+/* 顶栏单位/岗位切换 */
+.app-head { gap: 16px; flex-wrap: wrap; }
+.head-user { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.head-select { display: inline-flex; align-items: center; gap: 4px; font-size: 12px; }
+.head-select select { font-size: 12px; padding: 2px 4px; }
+.head-operator { white-space: nowrap; }
+.readonly-tag { font-style: normal; background: #fef3c7; color: #92400e; border-radius: 4px; padding: 0 6px; margin-left: 4px; font-size: 11px; }
+.readonly-banner { background: #fef3c7; border: 1px solid #f59e0b; color: #92400e; border-radius: 8px; padding: 8px 12px; font-size: 13px; margin-bottom: 12px; }
+.stat-danger { color: #b42318; }
+.section-title { margin: 22px 0 8px; font-size: 15px; }
+.consistency-ok { color: #027a48; font-size: 12px; }
+
+/* 标签页 */
+.tab-bar { display: flex; gap: 6px; border-bottom: 1px solid var(--border); margin-bottom: 12px; flex-wrap: wrap; }
+.tab-btn { border: 1px solid transparent; border-bottom: none; background: #eef2f7; border-radius: 8px 8px 0 0; padding: 7px 14px; cursor: pointer; font-size: 13px; position: relative; }
+.tab-btn.active { background: #fff; border-color: var(--border); color: var(--brand); font-weight: 600; }
+.tab-badge { font-style: normal; background: var(--brand); color: #fff; border-radius: 999px; font-size: 11px; padding: 0 7px; margin-left: 4px; }
+.tab-panel { background: transparent; }
+.batch-controls { background: #fff; border: 1px solid var(--border); border-radius: 8px; padding: 10px 12px; }
+
+/* 灯具表行状态 */
+.lamp-table tr.foreign { background: #fffbeb; }
+.lamp-table tr.replaced { background: #f0fdf4; }
+.lamp-table tr.selected td { background: #eff6ff; }
+.code-kind { border-radius: 4px; padding: 1px 6px; font-size: 11px; }
+.code-kind.ok { background: #dcfce7; color: #166534; }
+.code-kind.warn { background: #fef3c7; color: #92400e; }
+
+/* 核对面板 */
+.precheck-panel, .receipt-panel { background: #fff; border: 1px solid var(--border); border-radius: 8px; padding: 12px 14px; margin-top: 14px; }
+.precheck-panel h3, .receipt-panel h3 { margin: 0 0 8px; font-size: 14px; }
+.precheck-summary { font-size: 13px; margin: 4px 0 10px; }
+.issue-group { margin: 10px 0; }
+.issue-group h4 { font-size: 13px; margin: 6px 0; }
+.issue-group.block h4 { color: #b42318; }
+.issue-group.repeat h4 { color: #92400e; }
+.issue-group ul { margin: 4px 0; padding-left: 18px; font-size: 13px; }
+.inner-table { margin-top: 6px; }
+.issue-tag { background: #fee2e2; color: #991b1b; border-radius: 4px; padding: 1px 6px; font-size: 11px; font-style: normal; white-space: nowrap; }
+.issue-tag.ok { background: #dcfce7; color: #166534; }
+.stock-line { display: flex; gap: 14px; font-size: 13px; padding: 3px 0; }
+.stock-lack { color: #b42318; font-weight: 600; }
+.stock-ok { color: #027a48; }
+.submit-bar { display: flex; align-items: center; gap: 12px; margin-top: 12px; }
+.hint { color: var(--muted); font-size: 12px; }
+.hint code { background: #eef2f7; padding: 1px 5px; border-radius: 4px; }
+
+/* 回执 */
+.receipt-panel.rejected { border-color: #f59e0b; background: #fffbeb; }
+.batch-flag { font-size: 12px; border-radius: 4px; padding: 1px 8px; margin-left: 6px; font-style: normal; }
+.batch-flag.ok { background: #dcfce7; color: #166534; }
+.batch-flag.no { background: #fee2e2; color: #991b1b; }
+.receipt-meta { color: var(--muted); font-size: 12px; }
+.conclusion-ok { color: #027a48; font-weight: 600; }
+.conclusion-fail { color: #b42318; }
+.batch-row { cursor: pointer; }
+.batch-row:hover td { background: #f8fafc; }
+.batch-detail { background: #f8fafc !important; }
+.remark-cell { color: var(--muted); font-size: 12px; max-width: 320px; }
+tr.archived { color: var(--muted); background: #f8fafc; }
+
+/* 库存卡片 */
+.stock-grid { display: flex; gap: 10px; flex-wrap: wrap; }
+.stock-card { display: flex; flex-direction: column; gap: 4px; background: #fff; border: 1px solid var(--border); border-radius: 8px; padding: 8px 14px; min-width: 130px; }
+.stock-card span { font-size: 12px; color: var(--muted); }
+.stock-card strong { font-size: 20px; }

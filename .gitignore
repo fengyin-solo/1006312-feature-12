@@ -85,3 +85,6 @@ desktop.ini
 *.db
 *.pid
 *.seed
+
+# 照明整组处理冒烟测试产物
+.smoke/

@@ -29,6 +29,13 @@
         <span>{{ field }}</span>
         <input v-model="filters[field]" :placeholder="`按${field}检索`" />
       </label>
+      <label class="filter-item">
+        <span>来源</span>
+        <select v-model="sourceFilter">
+          <option value="">全部检修记录</option>
+          <option value="照明整组更换">照明整组更换派出</option>
+        </select>
+      </label>
       <button class="btn" type="submit">查询</button>
       <button class="btn ghost" type="button" @click="resetFilters">重置条件</button>
     </form>
@@ -36,6 +43,7 @@
     <table class="data-table">
       <thead>
         <tr>
+          <th>来源</th>
           <th v-for="column in columns" :key="column">{{ column }}</th>
           <th>当前状态</th>
           <th>可执行动作</th>
@@ -43,6 +51,10 @@
       </thead>
       <tbody>
         <tr v-for="row in rows" :key="String(row.id)">
+          <td>
+            <span v-if="String(row.检修类别) === '灯具更换复验'" class="issue-tag ok">照明整组更换</span>
+            <span v-else>常规登记</span>
+          </td>
           <td v-for="column in columns" :key="column">{{ row[column] ?? '—' }}</td>
           <td>{{ row.status }}</td>
           <td class="row-actions">
@@ -58,7 +70,7 @@
           </td>
         </tr>
         <tr v-if="!rows.length">
-          <td :colspan="columns.length + 2" class="empty-state">暂无设施检修管理数据，可先登记检修记录</td>
+          <td :colspan="columns.length + 3" class="empty-state">暂无设施检修管理数据，可先登记检修记录</td>
         </tr>
       </tbody>
     </table>
@@ -91,6 +103,7 @@ const rows = ref<EntryRow[]>([])
 const total = ref(0)
 const errorMessage = ref('')
 const filters = ref<Record<string, string>>({})
+const sourceFilter = ref('')
 const filterFields = columns.slice(0, 3)
 const statusSummary = computed(() =>
   statuses.map((status: string) => ({
@@ -101,6 +114,7 @@ const statusSummary = computed(() =>
 
 function resetFilters() {
   filters.value = {}
+  sourceFilter.value = ''
   reload()
 }
 
@@ -126,8 +140,12 @@ function reload() {
   errorMessage.value = ''
   try {
     const payload = listEntries(meta.key, filters.value)
-    rows.value = payload.items
-    total.value = payload.total
+    let items = payload.items
+    if (sourceFilter.value === '照明整组更换') {
+      items = items.filter((row) => String(row.检修类别) === '灯具更换复验')
+    }
+    rows.value = items
+    total.value = items.length
   } catch (error) {
     errorMessage.value = error instanceof Error ? error.message : '设施检修管理列表读取失败'
   }
