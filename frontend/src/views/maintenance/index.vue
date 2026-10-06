@@ -3,7 +3,7 @@
     <header class="page-head">
       <div>
         <h2>设施检修管理管理</h2>
-        <p class="page-desc">维护检修记录，围绕检修编号、检修对象、检修类别、检修班组做登记、筛选与状态流转。</p>
+        <p class="page-desc">维护检修记录，围绕检修编号、检修对象、检修类别、检修班组做登记、筛选与状态流转；照明更换整批派出后在此可见待办。</p>
       </div>
       <div class="page-actions">
         <button class="btn primary" type="button" @click="openCreate">登记检修记录</button>
@@ -22,12 +22,17 @@
       <span v-for="item in statusSummary" :key="item.status" class="legend-item">
         {{ item.status }}：{{ item.count }}
       </span>
+      <span class="legend-item sync-legend">其中照明更换派来 {{ syncedCount }} 条</span>
     </p>
 
     <form class="filter-bar" @submit.prevent="reload">
       <label v-for="field in filterFields" :key="field" class="filter-item">
         <span>{{ field }}</span>
         <input v-model="filters[field]" :placeholder="`按${field}检索`" />
+      </label>
+      <label class="filter-item">
+        <span>来源批次</span>
+        <input v-model="filters['来源批次']" placeholder="按批次号检索" />
       </label>
       <button class="btn" type="submit">查询</button>
       <button class="btn ghost" type="button" @click="resetFilters">重置条件</button>
@@ -42,8 +47,14 @@
         </tr>
       </thead>
       <tbody>
-        <tr v-for="row in rows" :key="String(row.id)">
-          <td v-for="column in columns" :key="column">{{ row[column] ?? '—' }}</td>
+        <tr v-for="row in rows" :key="String(row.id)" :class="{ synced: row['来源批次'] }">
+          <td v-for="column in columns" :key="column">
+            <template v-if="column === '检修编号'">
+              {{ row[column] }}
+              <span v-if="row['来源批次']" class="tag tag-green">照明更换派出</span>
+            </template>
+            <template v-else>{{ row[column] ?? '—' }}</template>
+          </td>
           <td>{{ row.status }}</td>
           <td class="row-actions">
             <button
@@ -58,13 +69,13 @@
           </td>
         </tr>
         <tr v-if="!rows.length">
-          <td :colspan="columns.length + 2" class="empty-state">暂无设施检修管理数据，可先登记检修记录</td>
+          <td :colspan="columns.length + 2" class="empty-state">暂无设施检修管理数据</td>
         </tr>
       </tbody>
     </table>
 
     <footer class="page-foot">
-      <span>共 {{ total }} 条设施检修管理记录</span>
+      <span>共 {{ total }} 条检修记录，其中照明整组更换派出 {{ syncedCount }} 条待办</span>
       <span v-if="errorMessage" class="error-text">{{ errorMessage }}</span>
     </footer>
   </section>
@@ -75,6 +86,7 @@ import { computed, onMounted, ref } from 'vue'
 
 import {
   downloadEntries,
+  filterRows,
   listEntries,
   moduleMeta,
   runAction as applyAction,
@@ -82,16 +94,24 @@ import {
 import type { EntryRow } from '@/data/types'
 
 const meta = moduleMeta('maintenance')
-const columns = ["检修编号", "检修对象", "检修类别", "检修班组", "计划工期", "完工日期", "更换部件", "检修状态"]
+const columns = ["检修编号", "检修对象", "检修类别", "检修班组", "计划工期", "完工日期", "更换部件", "来源批次", "检修状态"]
 const actions = ["提交开工", "确认完工", "申请延期"]
 const statuses = ["待开工", "检修中", "已完工", "已延期"]
-const stats = [{"label": "待开工检修", "value": 0}, {"label": "检修中记录", "value": 0}, {"label": "本月完工数", "value": 0}]
 
 const rows = ref<EntryRow[]>([])
 const total = ref(0)
 const errorMessage = ref('')
 const filters = ref<Record<string, string>>({})
-const filterFields = columns.slice(0, 3)
+const filterFields = ["检修编号", "检修对象", "检修类别"]
+
+const stats = computed(() => [
+  { label: '待开工检修', value: rows.value.filter((row) => row.status === '待开工').length },
+  { label: '检修中记录', value: rows.value.filter((row) => row.status === '检修中').length },
+  { label: '本月完工数', value: rows.value.filter((row) => row.status === '已完工').length },
+  { label: '照明更换派出', value: rows.value.filter((row) => String(row['来源批次'] ?? '').startsWith('PL-')).length },
+])
+const syncedCount = computed(() => stats.value[3].value)
+
 const statusSummary = computed(() =>
   statuses.map((status: string) => ({
     status,
@@ -125,9 +145,9 @@ function runAction(action: string, row: EntryRow) {
 function reload() {
   errorMessage.value = ''
   try {
-    const payload = listEntries(meta.key, filters.value)
-    rows.value = payload.items
-    total.value = payload.total
+    const all = listEntries(meta.key).items
+    rows.value = filterRows(all, filters.value)
+    total.value = rows.value.length
   } catch (error) {
     errorMessage.value = error instanceof Error ? error.message : '设施检修管理列表读取失败'
   }

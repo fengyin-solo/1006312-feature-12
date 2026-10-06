@@ -2,7 +2,8 @@ import { SEED_ROWS } from './seed'
 import type { EntryRow } from './types'
 
 // 本地持久化：数据放在 localStorage 里，刷新、关掉再打开都还在。
-const STORAGE_KEY = 'urban-utility-tunnel:entries'
+// v2：照明整组处理改造（灯具补权属单位/投运日期/编号来源、检修带来源批次），旧缓存自动回到新种子。
+const STORAGE_KEY = 'urban-utility-tunnel:entries:v2'
 
 function clone<T>(value: T): T {
   return JSON.parse(JSON.stringify(value)) as T
